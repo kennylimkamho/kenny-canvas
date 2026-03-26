@@ -1,0 +1,633 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #111;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #e0e0e0;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 100;
+}
+
+.tool-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  background: rgba(24, 24, 24, 0.92);
+  backdrop-filter: blur(16px);
+  color: #c0c0c0;
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  position: relative;
+}
+
+.tool-btn:hover {
+  background: rgba(48, 48, 48, 0.95);
+  border-color: #444;
+  color: #fff;
+}
+
+.tool-btn.active {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.tool-btn:active {
+  transform: scale(0.94);
+}
+
+.tool-divider {
+  height: 1px;
+  background: #2a2a2a;
+  margin: 4px 0;
+}
+
+/* ── Tooltip ── */
+.tool-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 52px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: #ccc;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.tool-btn[data-tip]:hover::after {
+  opacity: 1;
+}
+
+/* ── Zoom Panel ── */
+.zoom-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(24, 24, 24, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 14px 10px;
+  z-index: 100;
+}
+
+.zoom-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #555;
+  text-transform: uppercase;
+}
+
+.zoom-slider-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.zoom-slider {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 6px;
+  height: 110px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  background: transparent;
+}
+
+.zoom-value {
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+  min-width: 38px;
+  text-align: center;
+}
+
+.zoom-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.zoom-btn {
+  width: 30px;
+  height: 28px;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  background: rgba(30, 30, 30, 0.9);
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+}
+
+.zoom-btn:hover {
+  background: rgba(48, 48, 48, 0.95);
+  color: #fff;
+}
+
+/* ── Info Bar ── */
+.info-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(24, 24, 24, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: #555;
+  z-index: 100;
+  line-height: 1.6;
+  display: flex;
+  gap: 16px;
+}
+
+.info-bar span {
+  color: #aaa;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Help Panel ── */
+.help-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(24, 24, 24, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 11px;
+  color: #555;
+  z-index: 100;
+  line-height: 2;
+}
+
+.help-panel kbd {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: monospace;
+  color: #888;
+  font-size: 10px;
+}
+
+/* ── Minimap ── */
+.minimap {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 170px;
+  height: 110px;
+  background: rgba(14, 14, 14, 0.95);
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  z-index: 100;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.minimap-label {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #333;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.minimap-viewport {
+  position: absolute;
+  border: 1.5px solid rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.08);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+/* ── Context Menu ── */
+.context-menu {
+  position: fixed;
+  background: rgba(20, 20, 20, 0.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 300;
+  min-width: 180px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #ccc;
+  transition: background 0.1s;
+}
+
+.ctx-item:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
+.ctx-item .icon {
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+}
+
+.ctx-item .shortcut {
+  margin-left: auto;
+  font-size: 10px;
+  color: #555;
+  font-family: monospace;
+}
+
+.ctx-item.danger {
+  color: #ef4444;
+}
+
+.ctx-item.danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.ctx-divider {
+  height: 1px;
+  background: #2a2a2a;
+  margin: 4px 0;
+}
+
+.ctx-section-label {
+  padding: 4px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #444;
+  text-transform: uppercase;
+}
+
+/* ── Sticky Note Input ── */
+.sticky-input-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticky-input-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.sticky-input-box {
+  position: relative;
+  background: #fef08a;
+  border-radius: 4px;
+  padding: 16px;
+  width: 280px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.sticky-input-box textarea {
+  width: 100%;
+  height: 120px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #422006;
+  resize: none;
+  line-height: 1.5;
+}
+
+.sticky-input-box textarea::placeholder {
+  color: #a16207;
+}
+
+.sticky-input-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sticky-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.1s;
+}
+
+.sticky-btn.cancel {
+  background: rgba(0,0,0,0.1);
+  color: #92400e;
+}
+
+.sticky-btn.cancel:hover {
+  background: rgba(0,0,0,0.15);
+}
+
+.sticky-btn.add {
+  background: #ca8a04;
+  color: white;
+}
+
+.sticky-btn.add:hover {
+  background: #a16207;
+}
+
+/* ── Text Input ── */
+.text-input-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-input-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.text-input-box {
+  position: relative;
+  background: rgba(30, 30, 30, 0.95);
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+}
+
+.text-input-box textarea {
+  width: 300px;
+  height: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  color: #fff;
+  resize: none;
+  padding: 12px;
+  line-height: 1.4;
+}
+
+/* ── Export Modal ── */
+.export-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.export-modal {
+  background: rgba(24, 24, 24, 0.98);
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 28px;
+  width: 360px;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.6);
+}
+
+.export-modal h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: rgba(30,30,30,0.8);
+}
+
+.export-option:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.export-option .opt-icon {
+  font-size: 24px;
+}
+
+.export-option .opt-info h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ddd;
+}
+
+.export-option .opt-info p {
+  font-size: 11px;
+  color: #555;
+  margin-top: 2px;
+}
+
+.export-option.selected {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.export-size-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.export-size-row label {
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.export-size-row select {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #ccc;
+  padding: 6px 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.export-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-export {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.12s;
+}
+
+.btn-export.cancel {
+  background: #2a2a2a;
+  color: #888;
+}
+
+.btn-export.cancel:hover {
+  background: #333;
+  color: #fff;
+}
+
+.btn-export.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-export.primary:hover {
+  background: #2563eb;
+}
+
+.btn-export.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Drop Zone Hint ── */
+.canvas-drop-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.canvas-drop-hint-inner {
+  text-align: center;
+  color: #2a2a2a;
+  user-select: none;
+}
+
+.canvas-drop-hint-inner .hint-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.canvas-drop-hint-inner .hint-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.canvas-drop-hint-inner .hint-sub {
+  font-size: 11px;
+  color: #222;
+  margin-top: 4px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+/* ── Selection box ── */
+.selection-box {
+  position: fixed;
+  border: 1.5px solid #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  pointer-events: none;
+  z-index: 50;
+}
